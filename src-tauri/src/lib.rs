@@ -2,13 +2,12 @@ use crate::app_state::AppState;
 use crate::tasks::shell_task::{ShellJob, ShellType, TaskNotify, TaskStatus};
 use crate::utils::{now_sec, HomeType};
 use std::collections::HashMap;
-use std::fs::OpenOptions;
-use std::io::Write;
-use std::path::Path;
 use std::sync::Arc;
 use tauri::{Emitter, State};
 use tauri_specta::{collect_commands, Builder};
 use tokio::sync::RwLock;
+
+
 
 mod app_state;
 mod err;
@@ -110,6 +109,9 @@ pub fn run() {
         use specta::TypeCollection;
         use specta_typescript::BigIntExportBehavior;
         use specta_typescript::Typescript;
+        use std::fs::OpenOptions;
+        use std::io::Write;
+        use std::path::Path;
 
         let bindings_path = Path::new("../src/bindings.ts");
 
