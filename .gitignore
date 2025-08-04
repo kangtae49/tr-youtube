@@ -22,7 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-yt-dlp.exe
-ffmpeg.exe
-ffplay.exe
-ffprobe.exe
+src-tauri/resources/yt-dlp.exe
+src-tauri/resources/ffmpeg.exe
+src-tauri/resources/ffplay.exe
+src-tauri/resources/ffprobe.exe
