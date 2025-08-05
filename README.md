@@ -34,6 +34,9 @@ For Android development, run:
 ```
 cargo tauri icon .\icons\tr-youtube.svg
 ```
+# pre download: src-tauri/resources/
+- yt-dlp.exe
+- ffmpeg.exe
 
 ```sh
 yt-dlp -f bestvideo+bestaudio --merge-output-format mp4 --paths "c:/sources" https://www.youtube.com/watch?v=wo96t6jDyHw
