@@ -6,6 +6,7 @@ import { openPath } from '@tauri-apps/plugin-opener';
 import {commands} from "@/bindings.ts";
 import {useTaskNotifyMapStore} from "@/stores/taskNotifyMapStore.ts";
 import {useSelectedTermIdStore} from "@/stores/selectedTermIdStore.ts";
+import {subLang} from "@/components/subLang.ts";
 
 
 function YoutubeDownloadView() {
@@ -17,37 +18,49 @@ function YoutubeDownloadView() {
   const [saveFolder, setSaveFolder] = useState<string | undefined>(undefined);
   const [cmdVideo, setCmdVideo] = useState<string[] | undefined>(undefined);
   const [cmdAudio, setCmdAudio] = useState<string[] | undefined>(undefined);
+  const [cmdSubtitle, setCmdSubtitle] = useState<string[] | undefined>(undefined);
+  const [lang, setLang] = useState<string>(navigator.language.split('-')[0]);
 
   const onChangeInputUrl = (url: string) => {
     setInputUrl(url);
     console.log(url);
   }
 
-  const onClickNext = () => {
-    if (inputUrl == "" || saveFolder == undefined) return;
-    const url = new URL(inputUrl);
-    console.log(url);
-    const param = url.searchParams.get("v");
-    if (param == null) return;
-    const youtubeUrl = `${url.origin}${url.pathname}?v=${param}`;
-    const cmdVideo: string[] = [
-      "-f", "bestvideo+bestaudio",
-      "--merge-output-format", "mp4",
-      "--paths", saveFolder,
-      youtubeUrl,
-    ];
-    const cmdAudio: string[] = [
-      "-x",
-      "--audio-format", "mp3",
-      "--audio-quality", "0",
-      "--postprocessor-args", "ffmpeg:-af loudnorm",
-      "--paths", saveFolder,
-      youtubeUrl,
-    ];
-    setYoutubeUrl(youtubeUrl);
-    setCmdVideo(cmdVideo);
-    setCmdAudio(cmdAudio);
-  }
+  // const onClickNext = () => {
+  //   if (inputUrl == "" || saveFolder == undefined) return;
+  //   const url = new URL(inputUrl);
+  //   console.log(url);
+  //   const param = url.searchParams.get("v");
+  //   if (param == null) return;
+  //   const youtubeUrl = `${url.origin}${url.pathname}?v=${param}`;
+  //   const cmdVideo: string[] = [
+  //     "-f", "bestvideo+bestaudio",
+  //     "--merge-output-format", "mp4",
+  //     "--paths", saveFolder,
+  //     youtubeUrl,
+  //   ];
+  //   const cmdAudio: string[] = [
+  //     "-x",
+  //     "--audio-format", "mp3",
+  //     "--audio-quality", "0",
+  //     "--postprocessor-args", "ffmpeg:-af loudnorm",
+  //     "--paths", saveFolder,
+  //     youtubeUrl,
+  //   ];
+  //
+  //   const cmdSubtitle: string[] = [
+  //     "--write-sub",
+  //     "--write-auto-sub",
+  //     "--sub-lang", "ko",
+  //     "--convert-subs", "srt",
+  //     "--paths", saveFolder,
+  //     youtubeUrl,
+  //   ]
+  //   setYoutubeUrl(youtubeUrl);
+  //   setCmdVideo(cmdVideo);
+  //   setCmdAudio(cmdAudio);
+  //   setCmdSubtitle(cmdSubtitle);
+  // }
 
   const clickOpenSaveFolder = async () => {
     const selected = await open({
@@ -88,6 +101,18 @@ function YoutubeDownloadView() {
     })
   }
 
+  const downloadSubtitle = async () => {
+    if (cmdSubtitle == undefined) return;
+    console.log(cmdSubtitle);
+    commands.runShell({
+      task_id: crypto.randomUUID().split("-")[0],
+      shell_type: "YtDlp",
+      args: cmdSubtitle
+    }).then((res) => {
+      console.log(res);
+    })
+  }
+
   /*
   !!! not working - child process
   const stopTask = (taskId: string) => {
@@ -108,6 +133,45 @@ function YoutubeDownloadView() {
   //
   // }, [youtubeUrl])
 
+  useEffect(() => {
+    if (inputUrl == "") return;
+    if (saveFolder == undefined) return;
+    if (lang == undefined) return;
+
+    const url = new URL(inputUrl);
+    console.log(url);
+    const param = url.searchParams.get("v");
+    if (param == null) return;
+    const youtubeUrl = `${url.origin}${url.pathname}?v=${param}`;
+    const cmdVideo: string[] = [
+      "-f", "bestvideo+bestaudio",
+      "--merge-output-format", "mp4",
+      "--paths", saveFolder,
+      youtubeUrl,
+    ];
+    const cmdAudio: string[] = [
+      "-x",
+      "--audio-format", "mp3",
+      "--audio-quality", "0",
+      "--postprocessor-args", "ffmpeg:-af loudnorm",
+      "--paths", saveFolder,
+      youtubeUrl,
+    ];
+
+    const cmdSubtitle: string[] = [
+      "--write-sub",
+      "--write-auto-sub",
+      "--sub-lang", lang,
+      "--convert-subs", "srt",
+      "--paths", saveFolder,
+      youtubeUrl,
+    ]
+    setYoutubeUrl(youtubeUrl);
+    setCmdVideo(cmdVideo);
+    setCmdAudio(cmdAudio);
+    setCmdSubtitle(cmdSubtitle);
+  }, [inputUrl, saveFolder, lang]);
+
 
   useEffect(() => {
     // setInputUrl("https://www.youtube.com/watch?v=wo96t6jDyHw&list=RDwo96t6jDyHw&start_radio=1");
@@ -119,6 +183,7 @@ function YoutubeDownloadView() {
         }
       }
     });
+
   }, []);
 
   return (
@@ -131,7 +196,7 @@ function YoutubeDownloadView() {
       <div className="row">
         <div className="label">Youtube url</div>
         <div className="icon">
-          <Icon icon={faGear} onClick={onClickNext} />
+          {/*<Icon icon={faGear} onClick={onClickNext} />*/}
         </div>
         <div className="input">
           <input value={inputUrl}
@@ -144,14 +209,21 @@ function YoutubeDownloadView() {
       {youtubeUrl && (
         <>
           <div className="row">
-            <div className="label"></div>
-            <div className="icon"></div>
-            <div className="info">{youtubeUrl}</div>
-          </div>
-          <div className="row">
             <div className="label">Video Download</div>
             <div className="icon"><Icon icon={faDownload}  onClick={downloadVideo}/></div>
             <div className="info">yt-dlp {cmdVideo?.join(" ")}</div>
+          </div>
+          <div className="row">
+            <div className="label">Subtitle Download</div>
+            <div className="icon"><Icon icon={faDownload}  onClick={downloadSubtitle}/></div>
+            <div className="select-lang">
+              <select value={lang} onChange={(event) => setLang(event.target.value)}>
+                {subLang.map(([k, v]) => (
+                  <option key={k} value={k}>{k} - {v}</option>
+                ))}
+              </select>
+            </div>
+            <div className="info">yt-dlp {cmdSubtitle?.join(" ")}</div>
           </div>
 
           <div className="row">
