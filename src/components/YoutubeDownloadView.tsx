@@ -20,47 +20,12 @@ function YoutubeDownloadView() {
   const [cmdAudio, setCmdAudio] = useState<string[] | undefined>(undefined);
   const [cmdSubtitle, setCmdSubtitle] = useState<string[] | undefined>(undefined);
   const [lang, setLang] = useState<string>(navigator.language.split('-')[0]);
+  const [subType, setSubType] = useState<string>("srt");
 
   const onChangeInputUrl = (url: string) => {
     setInputUrl(url);
     console.log(url);
   }
-
-  // const onClickNext = () => {
-  //   if (inputUrl == "" || saveFolder == undefined) return;
-  //   const url = new URL(inputUrl);
-  //   console.log(url);
-  //   const param = url.searchParams.get("v");
-  //   if (param == null) return;
-  //   const youtubeUrl = `${url.origin}${url.pathname}?v=${param}`;
-  //   const cmdVideo: string[] = [
-  //     "-f", "bestvideo+bestaudio",
-  //     "--merge-output-format", "mp4",
-  //     "--paths", saveFolder,
-  //     youtubeUrl,
-  //   ];
-  //   const cmdAudio: string[] = [
-  //     "-x",
-  //     "--audio-format", "mp3",
-  //     "--audio-quality", "0",
-  //     "--postprocessor-args", "ffmpeg:-af loudnorm",
-  //     "--paths", saveFolder,
-  //     youtubeUrl,
-  //   ];
-  //
-  //   const cmdSubtitle: string[] = [
-  //     "--write-sub",
-  //     "--write-auto-sub",
-  //     "--sub-lang", "ko",
-  //     "--convert-subs", "srt",
-  //     "--paths", saveFolder,
-  //     youtubeUrl,
-  //   ]
-  //   setYoutubeUrl(youtubeUrl);
-  //   setCmdVideo(cmdVideo);
-  //   setCmdAudio(cmdAudio);
-  //   setCmdSubtitle(cmdSubtitle);
-  // }
 
   const clickOpenSaveFolder = async () => {
     const selected = await open({
@@ -113,25 +78,6 @@ function YoutubeDownloadView() {
     })
   }
 
-  /*
-  !!! not working - child process
-  const stopTask = (taskId: string) => {
-    commands.stopShell(taskId).then((res) => {
-      console.log(res);
-    })
-  }
-   */
-
-  // useEffect(() => {
-  //   if (youtubeUrl == undefined) return;
-  //   commands.getMediaInfo(youtubeUrl).then((res) => {
-  //     if (res.status == "ok") {
-  //       const json = JSON.parse(res.data);
-  //       console.log(json);
-  //     }
-  //   })
-  //
-  // }, [youtubeUrl])
 
   useEffect(() => {
     if (inputUrl == "") return;
@@ -159,10 +105,11 @@ function YoutubeDownloadView() {
     ];
 
     const cmdSubtitle: string[] = [
+      "--skip-download",
       "--write-sub",
       "--write-auto-sub",
       "--sub-lang", lang,
-      "--convert-subs", "srt",
+      "--convert-subs", subType,
       "--paths", saveFolder,
       youtubeUrl,
     ]
@@ -170,7 +117,7 @@ function YoutubeDownloadView() {
     setCmdVideo(cmdVideo);
     setCmdAudio(cmdAudio);
     setCmdSubtitle(cmdSubtitle);
-  }, [inputUrl, saveFolder, lang]);
+  }, [inputUrl, saveFolder, lang, subType]);
 
 
   useEffect(() => {
@@ -208,6 +155,7 @@ function YoutubeDownloadView() {
       </div>
       {youtubeUrl && (
         <>
+
           <div className="row">
             <div className="label">Video Download</div>
             <div className="icon"><Icon icon={faDownload}  onClick={downloadVideo}/></div>
@@ -222,10 +170,13 @@ function YoutubeDownloadView() {
                   <option key={k} value={k}>{k} - {v}</option>
                 ))}
               </select>
+              <select value={subType} onChange={(event) => setSubType(event.target.value)}>
+                <option value="srt">srt</option>
+                <option value="vtt">vtt</option>
+              </select>
             </div>
             <div className="info">yt-dlp {cmdSubtitle?.join(" ")}</div>
           </div>
-
           <div className="row">
             <div className="label">Audio Download</div>
             <div className="icon"><Icon icon={faDownload} onClick={downloadAudio}/></div>
