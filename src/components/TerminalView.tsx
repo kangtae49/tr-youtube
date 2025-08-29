@@ -10,9 +10,8 @@ type Props = {
   termId: string
 }
 function TerminalView({termId}: Props) {
-  const termRefMap = useTermRefStore(state => state.termRefMap);
-  const setTermRefMap = useTermRefStore(state => state.setTermRefMap);
-  const selectedTermId = useSelectedTermIdStore(state => state.selectedTermId);
+  const {termRefMap, setTermRefMap} = useTermRefStore();
+  const {selectedTermId} = useSelectedTermIdStore();
 
   const containerRef = useRef<HTMLDivElement>(null);
   const termRef = useRef<XTerm>();

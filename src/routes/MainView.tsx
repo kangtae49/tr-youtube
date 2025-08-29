@@ -6,7 +6,7 @@ import TerminalListView from "@/components/TerminalListView.tsx";
 
 function MainView() {
   const [isResizing, setIsResizing] = useState(false);
-  const termRefMap = useTermRefStore(state => state.termRefMap);
+  const {termRefMap} = useTermRefStore();
 
   const onChangeSplitSize = (_size: number) => {
     // const term = termRefMap.get("terminal0")?.termRef.current;

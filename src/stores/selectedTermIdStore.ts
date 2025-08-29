@@ -7,6 +7,6 @@ export interface SelectedTermIdStore {
 
 export const useSelectedTermIdStore = create<SelectedTermIdStore>((set) => ({
   selectedTermId: undefined,
-  setSelectedTermId: (selectedTermId: string | undefined) => set(() => ({ selectedTermId }))
+  setSelectedTermId: (selectedTermId) => set(() => ({ selectedTermId }))
 }))
 

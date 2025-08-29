@@ -10,9 +10,9 @@ import {subLang} from "@/components/subLang.ts";
 
 
 function YoutubeDownloadView() {
-  const taskNotifyMap = useTaskNotifyMapStore(state => state.taskNotifyMap);
-  const setSelectedTermId = useSelectedTermIdStore(state => state.setSelectedTermId);
-  const selectedTermId = useSelectedTermIdStore(state => state.selectedTermId);
+  const {taskNotifyMap} = useTaskNotifyMapStore();
+  const {setSelectedTermId} = useSelectedTermIdStore();
+  const {selectedTermId} = useSelectedTermIdStore();
   const [inputUrl, setInputUrl] = useState<string>("");
   const [youtubeUrl, setYoutubeUrl] = useState<string | undefined>(undefined);
   const [saveFolder, setSaveFolder] = useState<string | undefined>(undefined);

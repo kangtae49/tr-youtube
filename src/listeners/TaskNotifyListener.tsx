@@ -6,10 +6,9 @@ import {useTermRefStore} from "@/stores/termRefStore.ts";
 import {useSelectedTermIdStore} from "@/stores/selectedTermIdStore.ts";
 
 function TaskNotifyListener() {
-  const setTaskNotifyList = useTaskNotifyMapStore((state) => state.setTaskNotifyList);
-  const addTaskNotify = useTaskNotifyMapStore((state) => state.addTaskNotify);
-  const termRefMap = useTermRefStore(state => state.termRefMap);
-  const setSelectedTermId = useSelectedTermIdStore(state => state.setSelectedTermId);
+  const {setTaskNotifyList, addTaskNotify} = useTaskNotifyMapStore();
+  const {termRefMap} = useTermRefStore();
+  const {setSelectedTermId} = useSelectedTermIdStore();
 
   useEffect(() => {
     const unlisten = listen<TaskNotify>('shell_task', (event) => {

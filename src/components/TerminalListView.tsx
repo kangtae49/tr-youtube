@@ -2,7 +2,7 @@ import {useTaskNotifyMapStore} from "@/stores/taskNotifyMapStore.ts";
 import TerminalView from "@/components/TerminalView.tsx";
 
 function TerminalListView() {
-  const taskNotifyMap = useTaskNotifyMapStore(state => state.taskNotifyMap);
+  const {taskNotifyMap} = useTaskNotifyMapStore();
 
   return (
     <div className="term-list-view">
